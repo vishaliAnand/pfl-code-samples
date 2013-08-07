@@ -1,3 +1,7 @@
+/**
+ * ChatServerEndPoint.java
+ * http://programmingforliving.com
+ */
 package com.pfl.samples.jee7.websocket;
 
 import java.util.Collections;
