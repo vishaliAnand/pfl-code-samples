@@ -1,0 +1,53 @@
+/**
+ * ChatBot.java
+ * http://programmingforliving.com
+ */
+package com.pfl.samples.jee7.websocket;
+
+import java.io.StringReader;
+import java.net.URI;
+
+import javax.json.Json;
+import javax.json.JsonObject;
+
+/**
+ * ChatBot
+ * @author Jiji_Sasidharan
+ */
+public class ChatBot {
+
+	/**
+	 * main
+	 * @param args
+	 * @throws Exception
+	 */
+	public static void main(String[] args) throws Exception {
+		final ChatClientEndpoint clientEndPoint = new ChatClientEndpoint(new URI("ws://localhost:8080/jee7-websocket-api/chat"));
+		clientEndPoint.addMessageHandler(new ChatClientEndpoint.MessageHandler() {
+			public void handleMessage(String message) {
+				JsonObject jsonObject = Json.createReader(new StringReader(message)).readObject();
+				if (!"bot".equals(jsonObject.getString("user"))) {
+					clientEndPoint.sendMessage(getMessage("Hello " + jsonObject.getString("user") + ", How are you?"));
+					// other dirty bot logic goes here.. :)
+				}
+			}
+		});
+		
+		while(true) {
+			clientEndPoint.sendMessage(getMessage("Hi There!!"));
+			Thread.sleep(30000);
+		}
+	}
+	
+	/**
+	 * Create a json representation.
+	 * @param message
+	 * @return
+	 */
+	private static String getMessage(String message) {
+		return Json.createObjectBuilder()
+						.add("user", "bot")
+						.add("message", message)
+				   .build().toString();
+	}
+}
