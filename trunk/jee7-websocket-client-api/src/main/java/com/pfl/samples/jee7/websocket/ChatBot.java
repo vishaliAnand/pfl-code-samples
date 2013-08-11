@@ -12,42 +12,46 @@ import javax.json.JsonObject;
 
 /**
  * ChatBot
+ * 
  * @author Jiji_Sasidharan
  */
 public class ChatBot {
 
-	/**
-	 * main
-	 * @param args
-	 * @throws Exception
-	 */
-	public static void main(String[] args) throws Exception {
-		final ChatClientEndpoint clientEndPoint = new ChatClientEndpoint(new URI("ws://localhost:8080/jee7-websocket-api/chat"));
-		clientEndPoint.addMessageHandler(new ChatClientEndpoint.MessageHandler() {
-			public void handleMessage(String message) {
-				JsonObject jsonObject = Json.createReader(new StringReader(message)).readObject();
-				if (!"bot".equals(jsonObject.getString("user"))) {
-					clientEndPoint.sendMessage(getMessage("Hello " + jsonObject.getString("user") + ", How are you?"));
-					// other dirty bot logic goes here.. :)
-				}
-			}
-		});
-		
-		while(true) {
-			clientEndPoint.sendMessage(getMessage("Hi There!!"));
-			Thread.sleep(30000);
-		}
-	}
-	
-	/**
-	 * Create a json representation.
-	 * @param message
-	 * @return
-	 */
-	private static String getMessage(String message) {
-		return Json.createObjectBuilder()
-						.add("user", "bot")
-						.add("message", message)
-				   .build().toString();
-	}
+    /**
+     * main
+     * @param args
+     * @throws Exception
+     */
+    public static void main(String[] args) throws Exception {
+        final ChatClientEndpoint clientEndPoint = new ChatClientEndpoint(new URI("ws://localhost:8080/jee7-websocket-api/chat"));
+        clientEndPoint.addMessageHandler(new ChatClientEndpoint.MessageHandler() {
+                    public void handleMessage(String message) {
+                        JsonObject jsonObject = Json.createReader(new StringReader(message)).readObject();
+                        String userName = jsonObject.getString("user");
+                        if (!"bot".equals(userName)) {
+                            clientEndPoint.sendMessage(getMessage("Hello " + userName +", How are you?"));
+                            // other dirty bot logic goes here.. :)
+                        }
+                    }
+                });
+
+        while (true) {
+            clientEndPoint.sendMessage(getMessage("Hi There!!"));
+            Thread.sleep(30000);
+        }
+    }
+
+    /**
+     * Create a json representation.
+     * 
+     * @param message
+     * @return
+     */
+    private static String getMessage(String message) {
+        return Json.createObjectBuilder()
+                       .add("user", "bot")
+                       .add("message", message)
+                   .build()
+                   .toString();
+    }
 }
